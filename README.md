@@ -60,3 +60,21 @@ Se corrigió el multiplicador oculto de la animación: el reloj ya no ejecuta 2.
 
 Inicio directo: https://zeroartlord.github.io/bytemind-web/?swarm=1&v=32
 Respaldo anterior: `backup/atlas-genesis-v3-1-normal-speed`.
+
+
+## V4 — Ecosistema Interactivo (noviembre de 2026)
+
+Esta edición suma **PEDALiCAFE** al catálogo, presentado responsablemente como **MVP en desarrollo**: ERP/CRM para pequeños negocios, con clientes, inventario, producción, facturación, pagos y operaciones USD/VES. Información respaldada por el README y package.json del repositorio `ZeroArtLord/PEDALiCAFE`.
+
+- Explorador interactivo para **NEXUM, VIGÍA, BOCADOS, PEDALiCAFE y ATLAS**.
+- Tres vistas por proyecto: **Panorama**, **Flujo** y **Tecnología**, con interfaces simuladas y descripciones claras.
+- Filtros de productos, modales informativos y botones para preparar consultas de contacto.
+- Acceso directo desde la sección de ATLAS al explorador.
+- El motor ATLAS GENESIS conserva la velocidad real **1×** de V3.2, el portal de neón, el Swarm y la espiral final, e integra las nuevas tarjetas en su secuencia de construcción.
+- La web sigue siendo un HTML autónomo sin npm ni servicios nuevos.
+
+**Respaldo:** `backup/bytemind-v3-2-before-ecosystem-v4`.
+
+Las vistas y diagramas son **conceptuales**; no son capturas de software conectado ni muestran métricas reales. El formulario prepara mensajes para WhatsApp o correo, no los envía a un servidor.
+
+**Comprobaciones locales:** cinco pestañas de proyectos, modos de visualización, filtros, fichas, contacto y diseño responsive. El Swarm registra 38 bloques y pasa la prueba de iniciar y saltar. No se ha cronometrado la reproducción completa del nuevo bloque con todos los dispositivos.
