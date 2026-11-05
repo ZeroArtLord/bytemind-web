@@ -78,3 +78,18 @@ Esta edición suma **PEDALiCAFE** al catálogo, presentado responsablemente como
 Las vistas y diagramas son **conceptuales**; no son capturas de software conectado ni muestran métricas reales. El formulario prepara mensajes para WhatsApp o correo, no los envía a un servidor.
 
 **Comprobaciones locales:** cinco pestañas de proyectos, modos de visualización, filtros, fichas, contacto y diseño responsive. El Swarm registra 38 bloques y pasa la prueba de iniciar y saltar. No se ha cronometrado la reproducción completa del nuevo bloque con todos los dispositivos.
+
+
+## ByteMind V4.1 — Visual & Mobile Refresh (2026-11-05)
+
+- Nueva jerarquía tipográfica: titulares, textos secundarios, indicadores, botones y etiquetas con mejor contraste sobre Network.
+- Secciones y tarjetas de servicios/proyectos más definidas, con paneles oscuros tipo cristal y separadores de cian discretos.
+- Mejoras en Ecosystem Explorer: estado de selección, pestañas táctiles horizontales en móvil, modos Panorama / Flujo / Tecnología más legibles; conserva NEXUM, VIGÍA, Bocados, PEDALiCAFE y ATLAS.
+- Diseño móvil específico: portada, espaciados, tarjetas compactas, proceso de trabajo, equipo, formulario y navegación inferior rápida Inicio / Servicios / Proyectos / Contacto.
+- Navegación inferior oculta durante el portal y la construcción Swarm, al abrir el menú o un diálogo. El botón para repetir GENESIS es compacto en móvil.
+- Corrección de desbordamiento horizontal en tableta; pruebas con Chromium a 320, 360, 375, 393, 430, 768, 820, 1024 y 1440px, sin errores JS en las pruebas funcionales.
+- Se conserva ATLAS GENESIS, el portal, espiral y reloj normal 1×; la animación de fondo permanece en modo ECO.
+
+Ver la web: https://zeroartlord.github.io/bytemind-web/?noswarm=1&v=41
+Forzar intro: https://zeroartlord.github.io/bytemind-web/?swarm=1&v=41
+Respaldo de V4: `backup/bytemind-v4-before-visual-refresh`.
