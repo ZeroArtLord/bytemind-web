@@ -40,3 +40,15 @@ En móviles se reduce el número de cursores simultáneos. La animación puede o
 **Uso:** visita `?swarm=1` para forzar la animación o `?noswarm=1` para omitirla. R reinicia; H oculta controles; espacio pausa; 1, 2 y 3 ajustan la velocidad; S salta.
 
 **Aviso:** el editor y los agentes muestran una simulación visual coreografiada, no compilación ni agentes de IA reales.
+
+
+## ATLAS GENESIS V3.1 — ritmo equilibrado y agentes activos
+
+- Ajustes para que el recorrido y la escritura se vean con claridad, sin perder el trabajo simultáneo.
+- Los agentes solo son visibles mientras ejecutan una tarea: eliminados los movimientos aleatorios de relleno y los cursores residuales.
+- Se mantiene el equipo de 24 cursores disponibles en escritorio y 12 en móvil, con asignación a marcos y escritura letra por letra.
+- El HUD muestra cuántos agentes están trabajando realmente.
+- Portal neón y regreso en espiral al ATLAS CORE preservados.
+- Pruebas en Chromium: 36 bloques completados, más de 750 palabras animadas, sin errores JS y sin cursores inactivos visibles.
+
+Acceso directo a esta edición: https://zeroartlord.github.io/bytemind-web/?swarm=1&v=31 . Velocidades: 1×, 1.5×, 2×; R reinicia; S salta; H oculta controles.

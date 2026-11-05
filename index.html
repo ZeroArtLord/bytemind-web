@@ -172,6 +172,10 @@ html.bm-building,html.bm-building body{scroll-behavior:auto!important}
 .bm-word-active .bm-word-ink::after{content:"";display:inline-block;position:relative;vertical-align:-.1em;width:2px;height:.85em;margin-left:1px;background:#7feeff;box-shadow:0 0 9px #3dcfff;animation:bm-word-caret .25s steps(2,end) infinite}
 @keyframes bm-word-caret{50%{opacity:.2}}
 
+
+/* Strictly hide agents without an actual assignment; avoid ghost cursors. */
+#bm-stage .bm-cursor:not(.active){opacity:0!important;visibility:hidden!important}
+#bm-stage .bm-cursor.active{visibility:visible}
 </style>
 <script>/* No flash on first intro; fail open if the module cannot load. */
 try { var _bmgp = new URL(location.href).searchParams; if (_bmgp.get('swarm')==='1' || (_bmgp.get('noswarm')!=='1' && !matchMedia('(prefers-reduced-motion: reduce)').matches && !sessionStorage.getItem('bm-genesis-v3-viewed'))) document.documentElement.classList.add('bm-awaiting'); } catch(e) {}
@@ -885,7 +889,7 @@ setTimeout(()=>document.documentElement.classList.remove('bm-awaiting'),4500);
     if(!active) return;
     if(!prev) prev=now;
     const dt=Math.min(65,now-prev);prev=now;
-    if(!paused) time+=dt*rate*3.2;
+    if(!paused) time+=dt*rate*2.6;
     const keep=[];
     for(const job of tasks){
       if(!active){job.done?.();continue}
@@ -894,17 +898,8 @@ setTimeout(()=>document.documentElement.classList.remove('bm-awaiting'),4500);
       if(p>=1){job.done?.()}else keep.push(job);
     }
     tasks=keep;
-    // Agent idle motion is intentionally throttled. Busy agents are driven by build jobs.
-    if(stage && stage.style.display !== 'none' && !paused && ++idleFrame % 3 === 0){
-      for(let i=0;i<actorLimit;i++){
-        const a=cursors[i];if(!a || a.busy)continue;
-        const w=Math.max(1,innerWidth-32),h=Math.max(1,innerHeight-120);
-        const t=time*.001;
-        const x=12+((i*113+t*(31+i%5*7))%w);
-        const y=85+((i*91+Math.sin(t*1.8+i*.9)*38+h)%h);
-        moveActor(a,x,y);
-      }
-    }
+    // No fake roaming: cursors are visible only while performing an assigned task.
+    // The animation clock and the task animations share the same speed.
     raf=requestAnimationFrame(tick);
   }
   function animate(duration,draw){
@@ -923,19 +918,19 @@ setTimeout(()=>document.documentElement.classList.remove('bm-awaiting'),4500);
     if(replay) return;
     replay=doc.createElement('button'); replay.id='bm-replay'; replay.type='button';replay.innerHTML='⌁ ATLAS <strong>GENESIS</strong> ↻';replay.title='Reproducir intro de neón y Swarm'; replay.addEventListener('click',()=>start());doc.body.appendChild(replay);
     cmd=doc.createElement('div');cmd.id='bm-command';cmd.setAttribute('role','toolbar');cmd.setAttribute('aria-label','Controles de ATLAS Swarm');
-    const brand=doc.createElement('span');brand.className='bm-cmd-logo';brand.textContent='◉ ATLAS / GENESIS V3';
+    const brand=doc.createElement('span');brand.className='bm-cmd-logo';brand.textContent='◉ ATLAS / GENESIS V3.1';
     status=doc.createElement('span');status.className='bm-cmd-status';status.textContent='SYSTEM STANDBY';
     percent=doc.createElement('span');percent.className='bm-cmd-percent';percent.textContent='0%';
     const actions=doc.createElement('div');actions.className='bm-cmd-actions';
     actions.append(button('Ⅱ','Pausa o reanudar (espacio)',()=>togglePause()));
-    actions.append(button('1×','Cambiar velocidad: 1× / 2× / 3×',e=>{rate=rate===1?2:rate===2?3:1;e.currentTarget.textContent=rate+'×'}));
+    actions.append(button('1×','Cambiar velocidad: 1× / 1.5× / 2×',e=>{rate=rate===1?1.5:rate===1.5?2:1;e.currentTarget.textContent=rate+'×'}));
     actions.append(button('↻','Volver a empezar (R)',()=>start()));
     actions.append(button('SALTAR','Saltar la introducción (S)',()=>finish()));
     cmd.append(brand,status,percent,actions);doc.body.append(cmd);
     code=doc.createElement('aside');code.id='bm-code';code.setAttribute('aria-label','Editor visual de código durante la construcción');
     const bar=doc.createElement('div');bar.className='bm-editor-top';codeFile=doc.createElement('span');codeFile.textContent='ByteMind / App.jsx';const conn=doc.createElement('span');conn.textContent='● AGENTS SYNC';bar.append(codeFile,conn);
     codeBody=doc.createElement('pre');codeBody.className='bm-editor-lines';codeBody.textContent='> awaiting agent initialization...';code.append(bar,codeBody);doc.body.appendChild(code);
-    hud=doc.createElement('div');hud.id='bm-hud';hud.textContent='◈ '+actorLimit+' AGENTES / CONSTRUCCIÓN EN VIVO';doc.body.appendChild(hud);
+    hud=doc.createElement('div');hud.id='bm-hud';hud.textContent='◈ 0 AGENTES TRABAJANDO / '+actorLimit+' DISPONIBLES';doc.body.appendChild(hud);
     stage=doc.createElement('div');stage.id='bm-stage';stage.setAttribute('aria-hidden','true');doc.body.appendChild(stage);
     for(let i=0;i<names.length;i++){
       const el=doc.createElement('div');el.className='bm-cursor';el.style.setProperty('--actor',cols[i]);el.style.setProperty('--actor-glow',cols[i]);el.innerHTML=arrow+'<label>'+names[i]+'</label>';stage.append(el);
@@ -984,7 +979,7 @@ setTimeout(()=>document.documentElement.classList.remove('bm-awaiting'),4500);
     portal.remove();portal=null;
     setStatus('SWARM ACTIVE // INICIANDO CONSTRUCCIÓN');
     code.style.display='';hud.style.display='';stage.style.display='';
-    cursors.slice(0,actorLimit).forEach(a=>a.el.classList.add('active'));
+    // No free-floating swarm. An agent enters the page only upon assignment.
   }
   function spark(x,y){
     if(!stage)return;
@@ -1078,25 +1073,41 @@ setTimeout(()=>document.documentElement.classList.remove('bm-awaiting'),4500);
       });
     });
   }
+  function updateWorkHUD(){
+    if(!hud)return;
+    const n=cursors.slice(0,actorLimit).filter(a=>a.busy).length;
+    hud.textContent='◈ '+n+' AGENTES TRABAJANDO / '+actorLimit+' DISPONIBLES';
+  }
   function selectAgents(count){
     const picked=[];
-    for(let i=0;i<count;i++){
-      const a=cursors[(actorIndex++)%actorLimit];
-      if(!picked.includes(a))picked.push(a);
+    for(let i=0;i<actorLimit && picked.length<count;i++){
+      const a=cursors[(actorIndex+i)%actorLimit];
+      if(!a.busy)picked.push(a);
     }
-    picked.forEach(a=>{a.busy=true;a.el.classList.add('active')});
+    actorIndex=(actorIndex+Math.max(1,picked.length))%actorLimit;
+    picked.forEach(a=>{
+      a.busy=true;
+      a.el.classList.add('active');
+      a.el.style.removeProperty('opacity');
+    });
+    updateWorkHUD();
     return picked;
+  }
+  function releaseAgents(actors){
+    actors.forEach(a=>{a.busy=false;a.el.classList.remove('active');a.el.style.removeProperty('opacity');});
+    updateWorkHUD();
   }
   async function drawUnit(el,selector,id){
     if(!alive(id)||!el)return;
     const r=el.getBoundingClientRect();
     if(r.width<2||r.height<2||r.bottom<20||r.top>innerHeight-20){debugSkipped.push({selector,rect:[Math.round(r.top),Math.round(r.bottom)],scroll:Math.round(scrollY)});el.classList.add('bm-complete');buildCount++;setProgress();return}
-    const actors=selectAgents(mobile?3:5),lead=actors[0];
+    const words=prepareWords(el);
+    const actors=selectAgents(Math.min(mobile?3:5,Math.max(1,words.length))),lead=actors[0];
     const left=clamp(r.left,5,innerWidth-18),top=clamp(r.top,62,innerHeight-25);
     const right=clamp(r.right,left+16,innerWidth-6),bottom=clamp(r.bottom,top+14,innerHeight-8);
     const w=Math.max(12,right-left),h=Math.max(12,bottom-top);
     setStatus('DESIGN → '+lead.name+' / '+selector.split(' ').pop().toUpperCase());
-    const words=prepareWords(el);debugWritten.push({selector,count:words.length,top:Math.round(r.top)});
+    debugWritten.push({selector,count:words.length,top:Math.round(r.top)});
     // Show the empty box first; actual content is hidden in ghost words.
     el.classList.add('bm-working');el.style.clipPath='inset(0 100% 0 0)';
     const frame=doc.createElement('div');frame.className='bm-draw-box bm-live-frame';frame.style.setProperty('--actor',lead.color);
@@ -1107,7 +1118,7 @@ setTimeout(()=>document.documentElement.classList.remove('bm-awaiting'),4500);
     for(let j=1;j<actors.length;j++){moveActor(actors[j],left+(j/actors.length)*w,top);}
     const codeJob=showCode(el,selector,id);
     try{
-      await animate(230,(v)=>{
+      await animate(360,(v)=>{
         if(!alive(id))return;
         const d=ease(v);
         frame.style.width=Math.max(2,w*d)+'px';frame.style.height=Math.max(2,h*d)+'px';
@@ -1119,7 +1130,7 @@ setTimeout(()=>document.documentElement.classList.remove('bm-awaiting'),4500);
       el.style.clipPath='none';guide.remove();label.textContent='✓ '+lead.name+' / DESIGN';
       // The text-writing portion is longer than the frame drawing, and multiple
       // agents work independently on different words at the same time.
-      const writingMs=clamp(350+words.length*8,390,1080);
+      const writingMs=clamp(550+words.length*15,620,1700);
       await typeWords(words,actors,writingMs,id);
       if(!alive(id))return;
       for(const word of words)word.ink.textContent=word.text;
@@ -1130,7 +1141,7 @@ setTimeout(()=>document.documentElement.classList.remove('bm-awaiting'),4500);
       guide.remove();frame.remove();
       // Cleaning up happens even if the user skips/restarts mid-word.
       restoreWords(el);
-      actors.forEach(a=>a.busy=false);
+      releaseAgents(actors);
     }
     if(codeJob)codeJob.catch(()=>{});
   }
@@ -1256,7 +1267,7 @@ setTimeout(()=>document.documentElement.classList.remove('bm-awaiting'),4500);
     cursors.forEach(a=>{a.el.classList.remove('active');a.busy=false;a.el.style.opacity='';a.el.style.filter=''});
     [cmd,code,hud,stage].forEach(el=>{if(el)el.style.display='none'});
     replay&&(replay.style.display='flex');
-    try{sessionStorage.setItem('bm-genesis-v3-viewed','1')}catch{}
+    try{sessionStorage.setItem('bm-genesis-v31-viewed','1')}catch{}
     setStatus('BUILD COMPLETE');
     if(location.hash){history.replaceState(null,'',location.pathname+location.search)}
   }
@@ -1288,17 +1299,17 @@ setTimeout(()=>document.documentElement.classList.remove('bm-awaiting'),4500);
     else if(e.key==='s'||e.key==='S'||e.key==='Escape'){e.preventDefault();finish()}
     else if(e.key==='h'||e.key==='H'){hideControls=!hideControls;html.classList.toggle('bm-hidectrl',hideControls)}
     else if(e.key==='1')rate=1;
-    else if(e.key==='2')rate=2;
-    else if(e.key==='3')rate=3;
+    else if(e.key==='2')rate=1.5;
+    else if(e.key==='3')rate=2;
   });
   const noWheel=e=>{if(active){e.preventDefault()}};
   window.addEventListener('wheel',noWheel,{passive:false});
   window.addEventListener('touchmove',noWheel,{passive:false});
   document.addEventListener('visibilitychange',()=>{if(document.hidden&&active&&!paused)togglePause()});
   window.addEventListener('pagehide',()=>{if(active)finish()});
-  window.atlasGenesis={start,skip:finish,setSpeed:(v)=>{rate=clamp(Number(v)||1,.2,30)},getState:()=>({active,paused,rate,time,buildCount,total:targets.length,wordsWritten,agents:actorLimit,phase:status?.textContent,debugSkipped,debugWritten})};
+  window.atlasGenesis={start,skip:finish,setSpeed:(v)=>{rate=clamp(Number(v)||1,.2,30)},getState:()=>({active,paused,rate,time,buildCount,total:targets.length,wordsWritten,agents:actorLimit,busyAgents:cursors.slice(0,actorLimit).filter(a=>a.busy).length,visibleAgents:cursors.slice(0,actorLimit).filter(a=>a.el.classList.contains('active')).length,phase:status?.textContent,debugSkipped,debugWritten})};
   initUI();
-  const auto= !noauto && !reduce && (force || (()=>{try{return !sessionStorage.getItem('bm-genesis-v3-viewed')}catch{return true}})());
+  const auto= !noauto && !reduce && (force || (()=>{try{return !sessionStorage.getItem('bm-genesis-v31-viewed')}catch{return true}})());
   if(auto) setTimeout(()=>start(),65);else html.classList.remove('bm-awaiting','bm-building');
 })();
 
