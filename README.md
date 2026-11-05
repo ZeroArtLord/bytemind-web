@@ -26,3 +26,17 @@ En móviles se reduce el número de cursores simultáneos. La animación puede o
 **Copia de seguridad de la versión anterior:** rama `backup/pre-atlas-genesis-v1.2`.
 
 **Mantenimiento:** esta publicación incluye en `index.html` un cargador sin dependencias con los módulos de la experiencia incorporados. Los archivos originales editables `swarm-genesis.js` y `swarm-genesis.css` están en el paquete de código fuente de ATLAS GENESIS.
+
+
+## ATLAS GENESIS SWARM V3 — noviembre de 2026
+
+- 24 cursores en escritorio y 12 en móvil; coreografía acelerada de navegación, diseño, trazado de marcos y escritura letra por letra.
+- Cada unidad visible de la página se construye por grupos de agentes; la cámara recorre las secciones para evitar que aparezcan completas sin intervención.
+- Al terminar, todos los cursores forman una espiral neón y regresan al ATLAS CORE integrado en la portada.
+- El HTML publicado es autónomo y no necesita Node.js, compilación ni rutas a módulos externos.
+- Pruebas Chromium: 36 bloques completados; más de 770 palabras animadas; pausa, salto, repetición y visualización móvil funcionales.
+- Respaldos: `backup/atlas-genesis-v2-before-v3` (versión inmediata anterior) y `backup/pre-atlas-genesis-v1.2`.
+
+**Uso:** visita `?swarm=1` para forzar la animación o `?noswarm=1` para omitirla. R reinicia; H oculta controles; espacio pausa; 1, 2 y 3 ajustan la velocidad; S salta.
+
+**Aviso:** el editor y los agentes muestran una simulación visual coreografiada, no compilación ni agentes de IA reales.
