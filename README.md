@@ -52,3 +52,11 @@ En móviles se reduce el número de cursores simultáneos. La animación puede o
 - Pruebas en Chromium: 36 bloques completados, más de 750 palabras animadas, sin errores JS y sin cursores inactivos visibles.
 
 Acceso directo a esta edición: https://zeroartlord.github.io/bytemind-web/?swarm=1&v=31 . Velocidades: 1×, 1.5×, 2×; R reinicia; S salta; H oculta controles.
+
+
+## V3.2 — Velocidad 1× real (2026-11-05)
+
+Se corrigió el multiplicador oculto de la animación: el reloj ya no ejecuta 2.6× cuando el control indica 1×. Conservar la coreografía original, escritura letra a letra, cursores activos, portal de neón y espiral final. En modo predeterminado el reloj avanza en tiempo real según los fotogramas del navegador. Opcional: 1 / 2 / 3 para elegir 1×, 1.5× o 2×.
+
+Inicio directo: https://zeroartlord.github.io/bytemind-web/?swarm=1&v=32
+Respaldo anterior: `backup/atlas-genesis-v3-1-normal-speed`.

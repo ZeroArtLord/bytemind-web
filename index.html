@@ -889,7 +889,9 @@ setTimeout(()=>document.documentElement.classList.remove('bm-awaiting'),4500);
     if(!active) return;
     if(!prev) prev=now;
     const dt=Math.min(65,now-prev);prev=now;
-    if(!paused) time+=dt*rate*2.6;
+    // 1× must mean one millisecond of animation per real millisecond.
+    // Previous versions multiplied 1× by 2.6 and appeared too fast.
+    if(!paused) time+=dt*rate;
     const keep=[];
     for(const job of tasks){
       if(!active){job.done?.();continue}
@@ -1267,7 +1269,7 @@ setTimeout(()=>document.documentElement.classList.remove('bm-awaiting'),4500);
     cursors.forEach(a=>{a.el.classList.remove('active');a.busy=false;a.el.style.opacity='';a.el.style.filter=''});
     [cmd,code,hud,stage].forEach(el=>{if(el)el.style.display='none'});
     replay&&(replay.style.display='flex');
-    try{sessionStorage.setItem('bm-genesis-v31-viewed','1')}catch{}
+    try{sessionStorage.setItem('bm-genesis-v32-viewed','1')}catch{}
     setStatus('BUILD COMPLETE');
     if(location.hash){history.replaceState(null,'',location.pathname+location.search)}
   }
@@ -1309,7 +1311,7 @@ setTimeout(()=>document.documentElement.classList.remove('bm-awaiting'),4500);
   window.addEventListener('pagehide',()=>{if(active)finish()});
   window.atlasGenesis={start,skip:finish,setSpeed:(v)=>{rate=clamp(Number(v)||1,.2,30)},getState:()=>({active,paused,rate,time,buildCount,total:targets.length,wordsWritten,agents:actorLimit,busyAgents:cursors.slice(0,actorLimit).filter(a=>a.busy).length,visibleAgents:cursors.slice(0,actorLimit).filter(a=>a.el.classList.contains('active')).length,phase:status?.textContent,debugSkipped,debugWritten})};
   initUI();
-  const auto= !noauto && !reduce && (force || (()=>{try{return !sessionStorage.getItem('bm-genesis-v31-viewed')}catch{return true}})());
+  const auto= !noauto && !reduce && (force || (()=>{try{return !sessionStorage.getItem('bm-genesis-v32-viewed')}catch{return true}})());
   if(auto) setTimeout(()=>start(),65);else html.classList.remove('bm-awaiting','bm-building');
 })();
 
